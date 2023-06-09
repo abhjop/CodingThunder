@@ -1,0 +1,12 @@
+{
+    "params":{
+        "localhost": "True",
+        "local_server": "sqlite:///codingthunder.db",
+        "prod_server": "sqlite:///codingthunder.db",
+        "websitename": "CodingThunder",
+        "website_moto": "Just Simple Thinghs",
+        "fb_url": "https://facebook.com",
+        "tw_url": "https://twitter.com",
+        "git_url": "https://github.com"
+    }
+}
