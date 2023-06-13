@@ -23,7 +23,7 @@ db.init_app(app)
 
 
 class Contacts(db.Model):
-    sno = db.Column(db.Integer, primary_key=True)
+    srno = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(80), nullable=False)
     phone_num = db.Column(db.String(12), nullable=False)
     msg = db.Column(db.String(120), nullable=False)
@@ -31,14 +31,14 @@ class Contacts(db.Model):
     email = db.Column(db.String(20), nullable=True)
 
 class Post(db.Model):
-    sno = db.Column(db.Integer, primary_key=True)
+    srno = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(1000), nullable=False)
     content = db.Column(db.String(5000), nullable=False)
     date = db.Column(db.String(20), nullable=True)
     
     
 class Signup_details(db.Model):
-    srno = db.Column(db.Integer, primary_key=True)
+    srno = db.Column(db.Integer, primary_key=True, autoincrement=True)
     fristName = db.Column(db.String(30), nullable=False)
     lastName = db.Column(db.String(30), nullable=False)
     gender = db.Column(db.String(12), nullable=False)
