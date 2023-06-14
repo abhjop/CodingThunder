@@ -1,12 +1,9 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import json
 import sqlite3
 
-
-connection  = sqlite3.connect('instance\codingthunder.db')
-cursor = connection.cursor()
 
 with open("config.json", "r") as config:
     params = json.load(config)["params"]
@@ -15,6 +12,9 @@ local_server= True
 
 db = SQLAlchemy()
 app = Flask(__name__)
+
+app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///database.db'
+db=SQLAlchemy(app)
 
 if (local_server):
     app.config['SQLALCHEMY_DATABASE_URI'] = params["local_server"]
@@ -125,9 +125,10 @@ def signUp():
             db.session.add(entryPost)
             db.session.commit()
             msg = 'You have successfully registered !'
+            return redirect('/login', params = params, msg = msg)
     elif request.method == 'POST':
         msg = 'Please fill out the form !'
-    return render_template('signup.html', params = params, msg = msg)
+    return redirect('/login', params = params, msg = msg)
 
 
 @app.route('/login')
