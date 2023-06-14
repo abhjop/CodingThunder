@@ -38,3 +38,30 @@ $(document).ready(function(){
             autoclose: true,
         })
     })
+
+// Match the password and confirm password....  
+  // check the password and confirm password are same and valid.....
+  
+  function verifyPassword() {  
+    var pw = document.getElementById("passw1").value;  
+    var pw2 = document.getElementById("passw2").value;  
+
+    //check empty password field  
+   //minimum password length validation  
+    if(pw.length < 8) {  
+       document.getElementById("message").innerHTML = "**Password length must be atleast 8 characters";  
+       return false;  
+    }    
+  //maximum length of password validation  
+    else if(pw.length > 15) {  
+       document.getElementById("message").innerHTML = "**Password length must not exceed 15 characters";  
+       return false;  
+    } 
+    else if(pw1 != pw2)  
+    {   
+      alert("Passwords did not match");  
+    } else {  
+      alert("Password created successfully");  
+    }  
+
+  }  

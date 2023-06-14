@@ -2,8 +2,11 @@ from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import json
+import sqlite3
 
 
+connection  = sqlite3.connect('instance\codingthunder.db')
+cursor = connection.cursor()
 
 with open("config.json", "r") as config:
     params = json.load(config)["params"]
@@ -28,7 +31,7 @@ class Contacts(db.Model):
     phone_num = db.Column(db.String(12), nullable=False)
     msg = db.Column(db.String(120), nullable=False)
     date = db.Column(db.String(12), nullable=False)
-    email = db.Column(db.String(20), nullable=True)
+    email = db.Column(db.String(20), nullable=True, unique=True)
 
 class Post(db.Model):
     srno = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -45,7 +48,7 @@ class Signup_details(db.Model):
     phoneNo = db.Column(db.Integer, nullable=False)
     birthDate = db.Column(db.String(12), nullable=False)
     date = db.Column(db.String(12), nullable=False)
-    email = db.Column(db.String(20), nullable=True)
+    email = db.Column(db.String(20), nullable=True, unique=True)
     subject = db.Column(db.String(30), nullable=False)
     password = db.Column(db.String(50), nullable=False)
     
@@ -97,22 +100,34 @@ def setPost():
 
 @app.route('/signup', methods = ['GET', 'POST'])
 def signUp():
-    
-    if(request.method == 'POST'):
-        firstName = request.form.get("firstName")
-        lastName = request.form.get("lastName")
-        gender = request.form.get("inlineRadio")
-        phoneNo = request.form.get("phoneNumber")
-        birthDate = request.form.get("birthdayDate")
-        subject = request.form.get("chooseSubject")
-        email = request.form.get("email")
-        password = request.form.get("password")
-        
-        entryPost = Signup_details(fristName=firstName, email=email, lastName=lastName, gender=gender, phoneNo=phoneNo, birthDate=birthDate, subject=subject, date=datetime.now())
-        db.session.add(entryPost)
-        db.session.commit()
-
-    return render_template('signup.html', params = params)
+    msg = ''
+    if (request.method == 'POST' and 'email' in request.form and 'password' in request.form):
+        password = request.form['password']
+        email = request.form['email']
+        firstName = request.form['firstName']
+        lastName = request.form['lastName']
+        gender = request.form['inlineRadio']
+        phoneNo = request.form['phoneNumber']
+        birthDate = request.form['birthdayDate']
+        subject = request.form['chooseSubject']
+        #cursor = mysql.connection.cursor(instance/codingthunder.db)
+        query = 'SELECT * FROM Signup_details WHERE email = email;'
+        cursor.execute(query)
+        account = cursor.fetchall()
+        if account:
+            msg = 'Account already exists !'
+        elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+            msg = 'Invalid email address !'
+        elif not password or not email:
+            msg = 'Please fill out the form !'
+        else:
+            entryPost = Signup_details(email=email, password=password, fristName=firstName, lastName=lastName, gender=gender, phoneNo=phoneNo, birthDate=birthDate, subject=subject, date=datetime.now())
+            db.session.add(entryPost)
+            db.session.commit()
+            msg = 'You have successfully registered !'
+    elif request.method == 'POST':
+        msg = 'Please fill out the form !'
+    return render_template('signup.html', params = params, msg = msg)
 
 
 @app.route('/login')

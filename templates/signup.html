@@ -8,13 +8,13 @@
           <div class="card shadow-2-strong card-registration" style="border-radius: 15px; margin-top: 6%; padding-bottom: -7%;">
             <div class="card-body p-4 p-md-5">
               <h3 class="mb-4 pb-2 pb-md-0 mb-md-5">Registration Form</h3>
-              <form action="/signup" method="POST">
+              <form action="/signup" method="POST" onsubmit ="return verifyPassword()">
   
                 <div class="row">
                   <div class="col-md-6 mb-4">
-  
+                    <div class="msg">{{ msg }}</div>  
                     <div class="form-outline">
-                      <input type="text" id="firstName" name="firstName" class="form-control form-control-lg" />
+                      <input type="text" id="firstName" name="firstName" class="form-control form-control-lg" required/>
                       <label class="form-label" for="firstName">First Name</label>
                     </div>
   
@@ -33,7 +33,7 @@
                   <div class="col-md-6 mb-4 d-flex align-items-center">
   
                     <div class="form-outline datepicker w-100">
-                      <input type="text" placeholder="MM/DD/YYY" class="form-control form-control-lg" name="birthdayDate" id="birthdayDate" />
+                      <input type="text" placeholder="MM/DD/YYY" class="form-control form-control-lg" name="birthdayDate" id="birthdayDate" required/>
                       <label for="birthdayDate" class="form-label">Birthday</label>
                     </div>
   
@@ -44,7 +44,7 @@
   
                     <div class="form-check form-check-inline">
                       <input class="form-check-input" type="radio" name="inlineRadio" id="femaleGender"
-                        value="Female" checked />
+                        value="Female" checked required/>
                       <label class="form-check-label" for="femaleGender">Female</label>
                     </div>
   
@@ -67,7 +67,7 @@
                   <div class="col-md-6 mb-4 pb-2">
   
                     <div class="form-outline">
-                      <input type="email" id="emailAddress" name="email" class="form-control form-control-lg" />
+                      <input type="email" id="emailAddress" name="email" class="form-control form-control-lg" required/>
                       <label class="form-label" for="emailAddress">Email</label>
                     </div>
   
@@ -75,7 +75,7 @@
                   <div class="col-md-6 mb-4 pb-2">
   
                     <div class="form-outline">
-                      <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control form-control-lg" />
+                      <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control form-control-lg" required/>
                       <label class="form-label" for="phoneNumber">Phone Number</label>
                     </div>
   
@@ -87,15 +87,16 @@
                   <div class="col-md-6 mb-4 pb-2">
   
                     <div class="form-outline">
-                      <input type="password" id="password" name="password" placeholder="Password" class="form-control form-control-lg input-xlarge">
+                      <input type="password" id="passw1" name="password" placeholder="Password" class="form-control form-control-lg input-xlarge" required>
                       <label class="control-label" for="password">Password</label>
+                      <span id = "message" style="color:red"> </span>
                     </div>
   
                   </div>
                   <div class="col-md-6 mb-4 pb-2">
   
                     <div class="form-outline">
-                      <input type="password" id="password_confirm" name="password_confirm" placeholder="Confirm Password" class="form-control form-control-lg input-xlarge">
+                      <input type="password" id="passw2" name="password_confirm" placeholder="Confirm Password" class="form-control form-control-lg input-xlarge" required/>
                     <label class="control-label"  for="password_confirm">Password ( Confirm )</label>
                     </div>
   
@@ -117,7 +118,7 @@
                 </div>
   
                 <div class="mt-4 pt-2">
-                  <input class="btn btn-primary btn-lg" type="submit" value="Submit" />
+                  <input class="btn btn-primary btn-lg" type="submit" onclick="matchPassword()" value="Submit" />
                 </div>
   
               </form>
