@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
+from passlib.hash import sha256_crypt
 from datetime import datetime
 import json
 import sqlite3
@@ -10,47 +11,43 @@ with open("config.json", "r") as config:
 
 local_server= True
 
-db = SQLAlchemy()
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///database.db'
-db=SQLAlchemy(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mydb.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
 if (local_server):
     app.config['SQLALCHEMY_DATABASE_URI'] = params["local_server"]
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = params["prod_server"]
 
-
-db.init_app(app)
-
-
 class Contacts(db.Model):
-    srno = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(80), nullable=False)
-    phone_num = db.Column(db.String(12), nullable=False)
-    msg = db.Column(db.String(120), nullable=False)
-    date = db.Column(db.String(12), nullable=False)
-    email = db.Column(db.String(20), nullable=True, unique=True)
+    contact_sr_no = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    contact_name = db.Column(db.String(80), nullable=False)
+    contact_phone_num = db.Column(db.String(12), nullable=False)
+    contact_message = db.Column(db.String(120), nullable=False)
+    contact_date = db.Column(db.String(12), nullable=False)
+    contact_email = db.Column(db.String(20), nullable=True, unique=True)
 
 class Post(db.Model):
-    srno = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    title = db.Column(db.String(1000), nullable=False)
-    content = db.Column(db.String(5000), nullable=False)
-    date = db.Column(db.String(20), nullable=True)
+    post_sr_no = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    post_title = db.Column(db.String(1000), nullable=False)
+    post_content = db.Column(db.String(5000), nullable=False)
+    post_date = db.Column(db.String(20), nullable=True)
     
     
-class Signup_details(db.Model):
-    srno = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    fristName = db.Column(db.String(30), nullable=False)
-    lastName = db.Column(db.String(30), nullable=False)
-    gender = db.Column(db.String(12), nullable=False)
-    phoneNo = db.Column(db.Integer, nullable=False)
-    birthDate = db.Column(db.String(12), nullable=False)
-    date = db.Column(db.String(12), nullable=False)
-    email = db.Column(db.String(20), nullable=True, unique=True)
-    subject = db.Column(db.String(30), nullable=False)
-    password = db.Column(db.String(50), nullable=False)
+class SignupDetails(db.Model):
+    reg_srno = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    reg_frist_name = db.Column(db.String(30), nullable=False)
+    reg_last_name = db.Column(db.String(30), nullable=False)
+    reg_gender = db.Column(db.String(12), nullable=False)
+    reg_phone_no = db.Column(db.Integer, nullable=False)
+    reg_birth_date = db.Column(db.String(12), nullable=False)
+    reg_date = db.Column(db.String(12), nullable=False)
+    reg_email = db.Column(db.String(20), nullable=True, unique=True)
+    reg_subject = db.Column(db.String(30), nullable=False)
+    reg_password = db.Column(db.String(256), nullable=False)
     
 #create first app
 @app.route('/')
@@ -77,8 +74,8 @@ def Contact():
         message = request.form.get('message')
         email = request.form.get('email')
 
-        entry = Contacts(name=name, phone_num=phone_num, date=datetime.now(), msg=message, email=email)
-        db.session.add(entry)
+        entry_contact = Contacts(contact_name=name, contact_phone_num=phone_num, contact_date=datetime.now(), contact_message=message, contact_email=email)
+        db.session.add(entry_contact)
         db.session.commit()
 
     
@@ -90,11 +87,9 @@ def setPost():
         title = request.form.get('title')
         content = request.form.get('content')
 
-        entryPost = Post(title=title, date=datetime.now(), content=content)
-        db.session.add(entryPost)
-        db.session.commit()
-
-    
+        entry_post = Post(post_title=title, post_date=datetime.now(), post_content=content)
+        db.session.add(entry_post)
+        db.session.commit()    
     return render_template('set-post.html', params = params)
 
 
@@ -102,7 +97,7 @@ def setPost():
 def signUp():
     msg = ''
     if (request.method == 'POST' and 'email' in request.form and 'password' in request.form):
-        password = request.form['password']
+        password = sha256_crypt.encrypt(request.form['password'])
         email = request.form['email']
         firstName = request.form['firstName']
         lastName = request.form['lastName']
@@ -110,25 +105,18 @@ def signUp():
         phoneNo = request.form['phoneNumber']
         birthDate = request.form['birthdayDate']
         subject = request.form['chooseSubject']
-        #cursor = mysql.connection.cursor(instance/codingthunder.db)
-        query = 'SELECT * FROM Signup_details WHERE email = email;'
-        cursor.execute(query)
-        account = cursor.fetchall()
-        if account:
-            msg = 'Account already exists !'
-        elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
-            msg = 'Invalid email address !'
-        elif not password or not email:
-            msg = 'Please fill out the form !'
+        if SignupDetails.query.filter_by(reg_email=email.data).first():
+            raise ValidationError("Email already registered!")
         else:
-            entryPost = Signup_details(email=email, password=password, fristName=firstName, lastName=lastName, gender=gender, phoneNo=phoneNo, birthDate=birthDate, subject=subject, date=datetime.now())
-            db.session.add(entryPost)
+            entry_post = SignupDetails(reg_email=email, reg_password=password, reg_frist_name=firstName, reg_last_name=lastName, 
+                                    reg_gender=gender, reg_phone_no=phoneNo, reg_birth_date=birthDate, reg_subject=subject, 
+                                    reg_date=datetime.now())
+            db.session.add(entry_post)
             db.session.commit()
+        if request.method == 'POST':
             msg = 'You have successfully registered !'
-            return redirect('/login', params = params, msg = msg)
-    elif request.method == 'POST':
-        msg = 'Please fill out the form !'
-    return redirect('/login', params = params, msg = msg)
+            return render_template('login.html', params = params, msg = msg)
+    return render_template('signup.html', params = params)
 
 
 @app.route('/login')

@@ -8,11 +8,11 @@
           <div class="card shadow-2-strong card-registration" style="border-radius: 15px; margin-top: 6%; padding-bottom: -7%;">
             <div class="card-body p-4 p-md-5">
               <h3 class="mb-4 pb-2 pb-md-0 mb-md-5">Registration Form</h3>
-              <form action="/signup" method="POST" onsubmit ="return verifyPassword()">
+              <form action="/signup" method="POST" >
   
                 <div class="row">
                   <div class="col-md-6 mb-4">
-                    <div class="msg">{{ msg }}</div>  
+  
                     <div class="form-outline">
                       <input type="text" id="firstName" name="firstName" class="form-control form-control-lg" required/>
                       <label class="form-label" for="firstName">First Name</label>
@@ -50,13 +50,13 @@
   
                     <div class="form-check form-check-inline">
                       <input class="form-check-input" type="radio" name="inlineRadio" id="maleGender"
-                        value="Male" />
+                        value="Male" required/>
                       <label class="form-check-label" for="maleGender">Male</label>
                     </div>
   
                     <div class="form-check form-check-inline">
                       <input class="form-check-input" type="radio" name="inlineRadio" id="otherGender"
-                        value="Other" />
+                        value="Other" required/>
                       <label class="form-check-label" for="otherGender">Other</label>
                     </div>
   
@@ -87,7 +87,7 @@
                   <div class="col-md-6 mb-4 pb-2">
   
                     <div class="form-outline">
-                      <input type="password" id="passw1" name="password" placeholder="Password" class="form-control form-control-lg input-xlarge" required>
+                      <input type="password" id="passw1" name="password" placeholder="Password" class="form-control form-control-lg input-xlarge"required />
                       <label class="control-label" for="password">Password</label>
                       <span id = "message" style="color:red"> </span>
                     </div>
@@ -96,7 +96,7 @@
                   <div class="col-md-6 mb-4 pb-2">
   
                     <div class="form-outline">
-                      <input type="password" id="passw2" name="password_confirm" placeholder="Confirm Password" class="form-control form-control-lg input-xlarge" required/>
+                      <input type="password" id="passw2" name="password_confirm" placeholder="Confirm Password" class="form-control form-control-lg input-xlarge" required />
                     <label class="control-label"  for="password_confirm">Password ( Confirm )</label>
                     </div>
   
@@ -106,7 +106,7 @@
                 <div class="row">
                   <div class="col-12">
   
-                    <select class="select form-control-lg" name="chooseSubject">
+                    <select class="select form-control-lg" name="chooseSubject" required>
                       <option value="1" disabled>Choose Subject</option>
                       <option value="c/c++">c/c++</option>
                       <option value="Python">Python</option>
