@@ -25,7 +25,7 @@ else:
 class Contacts(db.Model):
     contact_sr_no = db.Column(db.Integer, primary_key=True, autoincrement=True)
     contact_name = db.Column(db.String(80), nullable=False)
-    contact_phone_num = db.Column(db.String(12), nullable=False)
+    contact_phone_num = db.Column(db.Integer, nullable=False)
     contact_message = db.Column(db.String(120), nullable=False)
     contact_date = db.Column(db.String(12), nullable=False)
     contact_email = db.Column(db.String(20), nullable=True, unique=True)
@@ -37,7 +37,7 @@ class Post(db.Model):
     post_date = db.Column(db.String(20), nullable=True)
     
     
-class SignupDetails(db.Model):
+class Registration(db.Model):
     reg_srno = db.Column(db.Integer, primary_key=True, autoincrement=True)
     reg_frist_name = db.Column(db.String(30), nullable=False)
     reg_last_name = db.Column(db.String(30), nullable=False)
@@ -105,10 +105,11 @@ def signUp():
         phoneNo = request.form['phoneNumber']
         birthDate = request.form['birthdayDate']
         subject = request.form['chooseSubject']
-        if SignupDetails.query.filter_by(reg_email=email.data).first():
-            raise ValidationError("Email already registered!")
+        if Registration.query.filter_by(reg_email=email).first():
+            msg = "Email already registered!"
+            return render_template('signup.html', params = params, msg = msg)
         else:
-            entry_post = SignupDetails(reg_email=email, reg_password=password, reg_frist_name=firstName, reg_last_name=lastName, 
+            entry_post = Registration(reg_email=email, reg_password=password, reg_frist_name=firstName, reg_last_name=lastName, 
                                     reg_gender=gender, reg_phone_no=phoneNo, reg_birth_date=birthDate, reg_subject=subject, 
                                     reg_date=datetime.now())
             db.session.add(entry_post)
@@ -119,8 +120,15 @@ def signUp():
     return render_template('signup.html', params = params)
 
 
-@app.route('/login')
-def login():
+@app.route('/login', methods = ['GET', 'POST'])
+def login():    
+    if (request.method == 'POST' and 'email' in request.form and 'password' in request.form):
+        password = sha256_crypt.encrypt(request.form['password'])
+        email = request.form['email']
+        if Registration.reg_email == email:
+            msg = "Hi You are logged in"
+            return render_template('index.html', params = params, msg = msg)     
+       
     return render_template('login.html', params = params)
 
 
